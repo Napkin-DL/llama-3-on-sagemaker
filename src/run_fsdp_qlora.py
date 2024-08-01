@@ -76,6 +76,11 @@ class ScriptArguments:
         default=None, metadata={"help": "S3 URI to save the merged_mode"}
     )
 
+    registered_model: str = field(
+        default=None, metadata={"help": "registered_model name for mlflow"}
+    )
+    
+    
     wb_token: str = field(
         default=None, metadata={"help": "wb_token"}
     )
@@ -185,7 +190,6 @@ def training_function(script_args, sft_config):
     ################
     # Training
     ################
-    print(f"sft_config.output_dir : {sft_config.output_dir}")
 
     dataset_kwargs={
         "add_special_tokens": False,  # We template with special tokens
@@ -214,7 +218,6 @@ def training_function(script_args, sft_config):
     ##########################
     checkpoint = None
     if sft_config.resume_from_checkpoint is not None:
-        print(f"sft_config.resume_from_checkpoint : {sft_config.resume_from_checkpoint}")
         checkpoint = sft_config.resume_from_checkpoint
     train_result = trainer.train(resume_from_checkpoint=checkpoint)
 
@@ -238,7 +241,7 @@ def training_function(script_args, sft_config):
     trainer.save_model()
 
     if script_args.rank == 0:
-        mv = mlflow.register_model(script_args.model_uri, "llama-3-1-kor-bllossom-8b")
+        # mv = mlflow.register_model(script_args.model_uri, script_args.registered_model)
         mlflow.end_run()
 
         
@@ -247,8 +250,6 @@ if __name__ == "__main__":
     parser = TrlParser((ScriptArguments, SFTConfig))
     script_args, sft_config = parser.parse_args_and_config()  
     # config_args = yaml.load(open(script_args.config, 'r'), Loader = yaml.Loader)
-    print(f"os.environ : {os.environ}")
-    # print(f"sft_config.report_to : {sft_config.report_to[0]}")
     if sft_config.report_to[0] == 'wandb':
         wandb_login(script_args)
 
