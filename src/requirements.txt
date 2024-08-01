@@ -1,0 +1,11 @@
+transformers==4.40.1
+accelerate==0.28.0
+evaluate>=0.4.1
+peft>=0.10.0
+datasets>=2.19.0
+trl>=0.8.6
+bitsandbytes>=0.43.1
+wandb>=0.16.6
+flash-attn>=2.5.7
+mlflow-skinny==2.13.2
+sagemaker-mlflow==0.1.0
